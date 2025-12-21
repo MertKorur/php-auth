@@ -14,77 +14,38 @@
     <div class="container">
 
         <?php
-        if($_SERVER["REQUEST_METHOD"] == "POST") {
+        require_once "validator.php";
 
-            $username = $_POST["username"] ?? "";
-            $email = $_POST["email"] ?? "";
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+            $username = trim($_POST["username"] ?? "");
+            $username = preg_replace("/\s+/", " ", $username);
+
+            $email = trim($_POST["email"] ?? "");
+            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+
             $password = $_POST["password"] ?? "";
             $passwordRepeat = $_POST["repeat_password"] ?? "";
 
-            // Sanitize inputs
-            $username = trim($username);
-            $username = preg_replace("/\s+/", " ", $username);
+            $validator = new Validator();
 
-            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+            // REQUIRED
+            $validator->required("username", $username);
+            $validator->required("email", $email);
+            $validator->required("password", $password);
+            $validator->required("repeat_password", $passwordRepeat);
 
-            $errors = [];
-        
-            // Checks
-            if ($username === "") {
-                $errors[] = "Username is required.";
-            }
+            // FORMAT
+            $validator->username("username", $username);
+            $validator->email("email", $email);
+            $validator->password("password", $password);
 
-            if ($email === "") {
-                $errors[] = "Email is required.";
-            }
+            // MATCH
+            $validator->match("repeat_password", $password, $passwordRepeat);
 
-            if ($password === "") {
-                $errors[] = "Password is required.";
-            }
+            $errors = $validator->errors();
 
-            if ($passwordRepeat === "") {
-                $errors[] = "Please repeat your password.";
-            }
-
-            // Validation
-            if ($username !== "" && !preg_match("/^[a-zA-Z0-9_]{3,20}$/", $username)) {
-                $errors[] = "Username must be 3-20 characters long and can only contain letters, numbers, and underscores.";
-            }
-
-            if ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = "Invalid email format.";
-            }
-            /*
-            if ($email !== "" && !$email) {
-                $errors[] = "Invalid email format.";
-            }
-            */
-
-            if ($password !== "" && strlen($password) < 8) {
-                $errors[] = "Password must be at least 8 characters long.";
-            }
-
-            // Strict password rules (uncomment to enforce)
-            /*
-            if ($password !== "" && !preg_match('/[A-Z]/', $password)) {
-                $errors[] = "Password must contain at least one uppercase letter.";
-            }
-
-            if ($password !== "" && !preg_match('/[a-z]/', $password)) {
-                $errors[] = "Password must contain at least one lowercase letter.";
-            }
-
-            if ($password !== "" && !preg_match('/[0-9]/', $password)) {
-                $errors[] = "Password must contain at least one number.";
-            }
-            */
-
-            if ($password !== "" && $passwordRepeat !== "" && $password !== $passwordRepeat) {
-                $errors[] = "Passwords do not match.";
-            }
-
-            // Output
-            if (!empty($errors)) {
+            if ($validator->fails()) {
                 foreach ($errors as $error) {
                     echo "<div class='alert alert-danger' role='alert'>"
                         . htmlspecialchars($error, ENT_QUOTES, 'UTF-8')
@@ -99,12 +60,14 @@
         }
         ?>
 
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <form action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
-                <input type="text" class="form-control" name="username" placeholder="Username*">
+                <input type="text" class="form-control" name="username"
+                    value="<?= htmlspecialchars($username ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Username*">
             </div>
             <div class="form-group">
-                <input type="email" class="form-control" name="email" placeholder="Email*">
+                <input type="email" class="form-control" name="email"
+                    value="<?= htmlspecialchars($email ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Email*">
             </div>
             <div class="form-group">
                 <input type="password" class="form-control" name="password" placeholder="Password*">
