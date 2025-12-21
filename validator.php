@@ -61,7 +61,7 @@ class Validator
 
     public function fails(): bool
     {
-        return count($this->errors) > 0;
+        return !empty($this->errors);
     }
 
     public function errors(): array
