@@ -7,7 +7,7 @@ class Validator
     public const ERR_PASSWORD_MATCH = "Passwords do not match.";
     public const ERR_PASSWORD_UPPER = "Password must contain at least one uppercase letter.";
     public const ERR_PASSWORD_LOWER = "Password must contain at least one lowercase letter.";
-    public const ERR_PASWORD_NUM = "Password must contain at least one number.";
+    public const ERR_PASSWORD_NUM = "Password must contain at least one number.";
 
     private array $errors = [];
 
@@ -37,7 +37,7 @@ class Validator
         if (strlen($value) < 8) {
             $this->errors[$key] = self::ERR_PASSWORD_LENGTH;
         }
-
+        /*
         if (!preg_match('/[A-Z]/', $value)) {
             $this->errors[$key] = self::ERR_PASSWORD_UPPER;
         }
@@ -47,8 +47,9 @@ class Validator
         }
 
         if (!preg_match('/[0-9]/', $value)) {
-            $this->errors[$key] = self::ERR_PASWORD_NUM;
+            $this->errors[$key] = self::ERR_PASSWORD_NUM;
         }
+        */
     }
 
     public function match(string $key, string $value1, string $value2, ?string $message = null): void
