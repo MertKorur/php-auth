@@ -14,7 +14,6 @@
     <div class="container">
 
         <?php
-        require_once __DIR__ . "/validator.php";
         require_once __DIR__ . "/config/bootstrap.php";
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -62,6 +61,14 @@
                 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
                 // save to db
+                $repo = new UserRepository($pdo);
+
+                if ($repo->userExists($username, $email)) {
+                    $errors[] = "Username or email already exists.";
+                } else {
+                    echo "Adding user";
+                    $repo->createUser($username, $email, $passwordHash);
+                }
             }
         }
         ?>
