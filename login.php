@@ -5,7 +5,6 @@ declare(strict_types=1);
 require_once __DIR__ . "/bootstrap.php";
 
 $errors = [];
-$success = false;
 
 $username = "";
 $password = "";
@@ -44,8 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (!$user || !password_verify($password, $user["password"])) {
             $errors[] = "Invalid username or password.";
         } else {
+            session_regenerate_id(true);
+            $_SESSION["user_id"] = $user["id"];
+            $_SESSION["username"] = $user["username"];
+
             header("Location: dashboard.php");
-            $success = true;
+            exit;
         }
     }
 }
@@ -74,11 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 . htmlspecialchars($error, ENT_QUOTES, 'UTF-8')
                 . "</div>";
         }
-
-        if ($success) {
-            echo "<div class='alert alert-success'>Registration successful!</div>";
-        }
-
         ?>
 
         <form method="post">
