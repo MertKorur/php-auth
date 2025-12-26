@@ -1,13 +1,24 @@
 <?php
+
+declare(strict_types=1);
+
 require_once __DIR__ . "/bootstrap.php";
+
+$errors = [];
+$success = false;
+
+$username = "";
+$email = "";
+$password = "";
+$passwordRepeat = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!csrf_verify($_POST["csrf_token"] ?? null)) {
-        http_response_code(403);
-        die("Invalid CSRF token.");
+        $errors[] = "Invalid request. Please refresh and try again.";
     }
 
+    // INPUT
     $username = trim($_POST["username"] ?? "");
     $username = preg_replace("/\s+/", " ", $username);
 
@@ -19,24 +30,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $validator = new Validator();
 
-    // REQUIRED
+    // VALIDATION
+    // required
     $validator->required("username", $username);
     $validator->required("email", $email);
     $validator->required("password", $password);
     $validator->required("repeat_password", $passwordRepeat);
 
-    // FORMAT
+    // format
     $validator->username("username", $username);
     $validator->email("email", $email);
     $validator->password("password", $password);
-
-    // MATCH
+    // match
     $validator->match("repeat_password", $password, $passwordRepeat);
 
+    // Collect errors
+    $errors = array_values($validator->errors());
 
-    if ($validator->fails()) {
-        $errors = $validator->errors();
-    } else {
+    if (empty($errors)) {
         $repo = new UserRepository($pdo);
 
         if ($repo->userExists($username, $email)) {
@@ -66,17 +77,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <div class="container">
+    <div class="container mt-5" style="max-width: 500px;">
+        <h2 class="mb-3">Register</h2>
         <?php
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                echo "<div class='alert alert-danger'>"
-                    . htmlspecialchars($error, ENT_QUOTES, 'UTF-8')
-                    . "</div>";
-            }
+        foreach ($errors as $error) {
+            echo "<div class='alert alert-danger'>"
+                . htmlspecialchars($error, ENT_QUOTES, 'UTF-8')
+                . "</div>";
         }
 
-        if (!empty($success)) {
+        if ($success) {
             echo "<div class='alert alert-success'>Registration successful!</div>";
         }
 
@@ -86,11 +96,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES) ?>">
             <div class="form-group">
                 <input type="text" class="form-control" name="username"
-                    value="<?= htmlspecialchars($username ?? '', ENT_QUOTES) ?>" placeholder="Username">
+                    value="<?= htmlspecialchars($username, ENT_QUOTES) ?>" placeholder="Username">
             </div>
             <div class="form-group">
                 <input type="email" class="form-control" name="email"
-                    value="<?= htmlspecialchars($email ?? '', ENT_QUOTES) ?>" placeholder="Email">
+                    value="<?= htmlspecialchars($email, ENT_QUOTES) ?>" placeholder="Email">
             </div>
             <div class="form-group">
                 <input type="password" class="form-control" name="password" placeholder="Password">

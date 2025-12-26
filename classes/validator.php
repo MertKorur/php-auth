@@ -14,7 +14,7 @@ class Validator
     public function required(string $key, string $value, ?string $message = null): void
     {
         if (trim($value) === "") {
-            $this->errors[$key] = self::ERR_PASSWORD_MATCH;
+            $this->errors[$key] = $message ?? "{$key} is required.";
         }
     }
 
