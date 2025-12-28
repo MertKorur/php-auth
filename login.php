@@ -9,6 +9,10 @@ $errors = [];
 $username = "";
 $password = "";
 
+if (isset($_SESSION["user_id"])) {
+    header("Location: dashboard.php");
+    exit;
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -47,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["user_id"] = $user["id"];
             $_SESSION["username"] = $user["username"];
 
+            flash_set("success", "Login successful.");
             header("Location: dashboard.php");
             exit;
         }
@@ -70,6 +75,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
     <div class="container mt-5" style="max-width: 500px;">
         <h2 class="mb-3">Login</h2>
+        <?php if ($msg = flash_get('success')): ?>
+        <div class="alert alert-success">
+            <?= htmlspecialchars($msg, ENT_QUOTES) ?>
+        </div>
+        <?php endif; ?>
+
 
         <?php
         foreach ($errors as $error) {
