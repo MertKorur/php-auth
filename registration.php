@@ -98,19 +98,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="text" class="form-control" name="username"
                     value="<?= htmlspecialchars($username, ENT_QUOTES) ?>" placeholder="Username">
             </div>
+
             <div class="form-group">
                 <input type="email" class="form-control" name="email"
                     value="<?= htmlspecialchars($email, ENT_QUOTES) ?>" placeholder="Email">
             </div>
+
             <div class="form-group">
                 <input type="password" class="form-control" name="password" placeholder="Password">
             </div>
+
             <div class="form-group">
                 <input type="password" class="form-control" name="repeat_password" placeholder="Repeat Password">
             </div>
-            <div class="form-btn">
+
+            <div class="text-center form-btn">
                 <button class="btn btn-primary mt-3">Register</button>
             </div>
+
+            <div class="text-center mt-3">
+                <span>Already have an account?</span>
+                <a href="login.php" class="btn btn-link">Login here</a>
+            </div>
+
         </form>
     </div>
 </body>
