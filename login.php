@@ -33,9 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $validator->required("username", $username);
     $validator->required("password", $password);
 
-    // format
-    $validator->username("username", $username);
-    $validator->password("password", $password);
+    // Format validation not required
 
     // Collect errors
     $errors = array_values($validator->errors());

@@ -15,7 +15,8 @@ $passwordRepeat = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!csrf_verify($_POST["csrf_token"] ?? null)) {
-        $errors[] = "Invalid request. Please refresh and try again.";
+        http_response_code(403);
+        exit("Invalid CSRF token.");
     }
 
     // INPUT
