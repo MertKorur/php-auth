@@ -10,7 +10,7 @@ $username = "";
 $password = "";
 
 if (isset($_SESSION["user_id"])) {
-    header("Location: dashboard.php");
+    header("Location: index.php");
     exit;
 }
 
@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["username"] = $user["username"];
 
             flash_set("success", "Login successful.");
-            header("Location: dashboard.php");
+            header("Location: index.php");
             exit;
         }
     }
